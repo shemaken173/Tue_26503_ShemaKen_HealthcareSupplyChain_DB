@@ -1,0 +1,57 @@
+-- Package Specification
+CREATE OR REPLACE PACKAGE SupplyChain_Pkg AS
+    PROCEDURE FetchInventoryStatus(p_SupplyID IN NUMBER, p_Quantity OUT NUMBER);
+    FUNCTION CalculateTotalSpending(p_DepartmentID IN NUMBER) RETURN NUMBER;
+END SupplyChain_Pkg;
+/
+
+-- Package Body
+CREATE OR REPLACE PACKAGE BODY SupplyChain_Pkg AS
+    PROCEDURE FetchInventoryStatus(p_SupplyID IN NUMBER, p_Quantity OUT NUMBER) IS
+        CURSOR inv_cursor IS
+            SELECT QuantityInStock
+            FROM Inventory
+            WHERE SupplyID = p_SupplyID;
+    BEGIN
+        OPEN inv_cursor;
+        FETCH inv_cursor INTO p_Quantity;
+        IF inv_cursor%NOTFOUND THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Supply ID not found.');
+        END IF;
+        CLOSE inv_cursor;
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20002, 'Error fetching inventory: ' || SQLERRM);
+    END FetchInventoryStatus;
+
+    FUNCTION CalculateTotalSpending(p_DepartmentID IN NUMBER) RETURN NUMBER IS
+        v_Total NUMBER;
+    BEGIN
+        SELECT SUM(TotalAmount) OVER (PARTITION BY DepartmentID)
+        INTO v_Total
+        FROM PurchaseOrders
+        WHERE DepartmentID = p_DepartmentID;
+        RETURN NVL(v_Total, 0);
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RETURN 0;
+        WHEN OTHERS THEN
+            RAISE_APPLICATION_ERROR(-20003, 'Error calculating spending: ' || SQLERRM);
+    END CalculateTotalSpending;
+END SupplyChain_Pkg;
+/
+
+-- Example DML Operation
+INSERT INTO UsageTracking VALUES (3, 1, 1, 20, TO_DATE('2025-05-07', 'YYYY-MM-DD'));
+
+-- Example DDL Operation
+ALTER TABLE MedicalSupplies ADD (SupplierRating NUMBER DEFAULT 0);
+
+-- Testing Procedure
+DECLARE
+    v_Quantity NUMBER;
+BEGIN
+    SupplyChain_Pkg.FetchInventoryStatus(1, v_Quantity);
+    DBMS_OUTPUT.PUT_LINE('Quantity in Stock: ' || v_Quantity);
+END;
+/

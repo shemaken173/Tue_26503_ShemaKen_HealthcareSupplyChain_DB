@@ -1,0 +1,70 @@
+-- Create Holiday Reference Table
+CREATE TABLE Holidays (
+    HolidayDate DATE PRIMARY KEY,
+    HolidayName VARCHAR2(100)
+);
+
+-- Insert Public Holidays for June 2025
+INSERT INTO Holidays VALUES (TO_DATE('2025-06-01', 'YYYY-MM-DD'), 'National Day');
+INSERT INTO Holidays VALUES (TO_DATE('2025-06-15', 'YYYY-MM-DD'), 'Independence Day');
+
+-- Create Audit Table
+CREATE TABLE AuditLog (
+    AuditID NUMBER PRIMARY KEY,
+    UserID VARCHAR2(50),
+    ActionDate DATE,
+    Operation VARCHAR2(50),
+    Status VARCHAR2(20)
+);
+
+-- Sequence for AuditID
+CREATE SEQUENCE AuditSeq START WITH 1 INCREMENT BY 1;
+
+-- Compound Trigger for Restrictions and Auditing
+CREATE OR REPLACE TRIGGER SupplyChain_Restrictions
+FOR INSERT OR UPDATE OR DELETE ON MedicalSupplies
+COMPOUND TRIGGER
+    v_Day VARCHAR2(10);
+    v_IsHoliday NUMBER;
+
+    BEFORE STATEMENT IS
+    BEGIN
+        -- Check if today is a weekday
+        SELECT TO_CHAR(SYSDATE, 'DY') INTO v_Day FROM DUAL;
+        IF v_Day IN ('MON', 'TUE', 'WED', 'THU', 'FRI') THEN
+            RAISE_APPLICATION_ERROR(-20004, 'Table manipulations not allowed on weekdays.');
+        END IF;
+
+        -- Check if today is a holiday in June 2025
+        SELECT COUNT(*) INTO v_IsHoliday
+        FROM Holidays
+        WHERE HolidayDate = TRUNC(SYSDATE)
+        AND EXTRACT(MONTH FROM HolidayDate) = 6
+        AND EXTRACT(YEAR FROM HolidayDate) = 2025;
+        IF v_IsHoliday > 0 THEN
+            RAISE_APPLICATION_ERROR(-20005, 'Table manipulations not allowed on holidays.');
+        END IF;
+    END BEFORE STATEMENT;
+
+    AFTER EACH ROW IS
+    BEGIN
+        -- Log the action
+        INSERT INTO AuditLog (AuditID, UserID, ActionDate, Operation, Status)
+        VALUES (AuditSeq.NEXTVAL, USER, SYSDATE, 
+                CASE 
+                    WHEN INSERTING THEN 'INSERT'
+                    WHEN UPDATING THEN 'UPDATE'
+                    WHEN DELETING THEN 'DELETE'
+                END, 'ALLOWED');
+    END AFTER EACH ROW;
+
+    AFTER STATEMENT IS
+    BEGIN
+        -- Additional auditing logic if needed
+        NULL;
+    END AFTER STATEMENT;
+END SupplyChain_Restrictions;
+/
+
+-- Problem Statement
+-- The trigger ensures that no INSERT, UPDATE, or DELETE operations are performed on the MedicalSupplies table during weekdays or public holidays in June 2025. Auditing tracks all actions, enhancing security by logging user activities and enforcing access restrictions.
