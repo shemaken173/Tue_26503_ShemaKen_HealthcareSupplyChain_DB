@@ -1,4 +1,8 @@
 # Healthcare Supply Chain Management System
+![Oracle](https://img.shields.io/badge/Oracle-SQL-blue.svg)
+![PL/SQL](https://img.shields.io/badge/PL%2FSQL-Database-orange.svg)
+![GitHub](https://img.shields.io/badge/GitHub-Repository-green.svg)
+
 
 ## Introduction
 - **Student**: Shema Ken (26503)
