@@ -1,4 +1,4 @@
-# PL/SQL Market Access System - Capstone Project
+# Healthcare Supply Chain Management System
 
 ## Introduction
 - **Student**: Shema Ken (26503)
