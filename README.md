@@ -9,7 +9,7 @@
 - **Course**: Database Development with PL/SQL (INSY 8311)
 - **Lecturer**: Eric Maniraguha
 
-## Problem Statement
+## 📋 Problem Statement
  The project addresses inefficiencies in health care supply chain management by developing a PL/SQL-based Oracle database to automate procurement, track inventory, and enhance decision-making.
 ## 📊 Methodology
 - **Phase I**: Defined problem and presented objectives.
