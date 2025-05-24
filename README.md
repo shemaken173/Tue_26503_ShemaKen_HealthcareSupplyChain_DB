@@ -6,6 +6,7 @@
 
 ## Introduction
 - **Student**: Shema Ken (26503)
+- **Group**: Tuesday
 - **Course**: Database Development with PL/SQL (INSY 8311)
 - **Lecturer**: Eric Maniraguha
 
