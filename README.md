@@ -9,9 +9,9 @@
 - **Course**: Database Development with PL/SQL (INSY 8311)
 - **Lecturer**: Eric Maniraguha
 
-## 📂 Problem Statement
+## Problem Statement
  The project addresses inefficiencies in health care supply chain management by developing a PL/SQL-based Oracle database to automate procurement, track inventory, and enhance decision-making.
-## Methodology
+## 📊 Methodology
 - **Phase I**: Defined problem and presented objectives.
 - **Phase II**: Modeled order processing using UML.
 - **Phase III**: Designed logical data model with ER diagram.
@@ -63,7 +63,7 @@
 - Real-world Application: Practical healthcare supply chain management features
 - These screenshots demonstrate a comprehensive, production-ready database system with advanced security, business logic, and data management capabilities suitable for healthcare supply chain operations.
 
-## SQL Queries
+## 📂 SQL Queries
 - **Table Creation and Data Insertion**:
 ```sql
  -- Table Creation for Healthcare Supply Chain Management
